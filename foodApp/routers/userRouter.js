@@ -1,11 +1,12 @@
 const express = require('express')
 const userRouter = express.Router()
 const userModel = require('../models/userModel')
+const protectRoute = require('./authHelper')
 
 
 userRouter
  .route('/')
- .get(getUser)
+ .get(protectRoute, getUsers)
  .post(postUser)
  .patch(updateUser)
  .delete(deleteUser)
@@ -25,7 +26,17 @@ userRouter
 
 
 
-
+async function getUsers(req, res) {
+ // let allUsers = await userModel.find()
+ let users = await userModel.find();
+ if( users ) {
+  return res.json(users)
+ } else {
+  res.json({
+   message: 'users not found',
+  })
+ }
+}
 
 async function getUser(req, res) {
  // let allUsers = await userModel.find()
@@ -98,5 +109,6 @@ function setCookies(req, res) {
  res.cookie('isPrimeMember', true, { maxAge: 1000 * 60 * 60, secure: true, httpOnly: true })
  res.send('cookies has been set')
 }
+
 
 module.exports = userRouter;
