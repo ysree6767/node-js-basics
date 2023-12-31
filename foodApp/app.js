@@ -41,8 +41,14 @@ authRouter
 
 
 
-function getUser(req, res) {
- res.send(users)
+async function getUser(req, res) {
+ // let allUsers = await userModel.find()
+ let user = await userModel.findOne({ name: 'john doe' })
+ res.json({
+  message: 'list of all users',
+  data: user
+ })
+
 }
 
 function postUser(req, res) {
@@ -54,19 +60,27 @@ function postUser(req, res) {
  })
 }
 
-function updateUser(req, res) {
+async function updateUser(req, res) {
  console.log('req.body', req.body)
- users = req.body
+ // users = req.body
+ // res.json({
+ //  message: 'data updated successfully',
+ //  users: req.body
+ // })
+ let dataToBeUpdated = req.body;
+ let user = await userModel.findOneAndUpdate({ email: "abcde@gmail.com" }, dataToBeUpdated)
  res.json({
-  message: 'data updated successfully',
-  users: req.body
+  message: 'data updated successfully'
  })
 }
 
-function deleteUser(req, res) {
- users = {}
+async function deleteUser(req, res) {
+ // users = {}
+ let dataTobeDeleted = req.body
+ let user = await userModel.findOneAndDelete(dataTobeDeleted)
  res.json({
-  message: 'data deleted successfully'
+  message: 'data deleted successfully',
+  data: user
  })
 }
 
@@ -108,12 +122,14 @@ function getSignUp(req, res, next) {
 }
 
 
-function postSignUp(req, res) {
- let obj = req.body
- console.log('backend', obj)
+async function postSignUp(req, res) {
+
+ let dataObj = req.body;
+ let user = await userModel.create(dataObj);
+
  res.json({
   message: "user signed up successfully",
-  data: obj
+  data: user
  })
 }
 
@@ -173,5 +189,5 @@ async function createUser() {
 }
 
 // Call the function
-createUser();
+// createUser();
 
