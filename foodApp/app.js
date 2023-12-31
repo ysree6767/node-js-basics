@@ -1,17 +1,19 @@
 const express = require('express')
 const app = express()
 const userModel = require('./models/userModel')
+const cookieParser = require('cookie-parser')
 
 app.listen(3000)
 
 // Middleware func -> post, font -> json:
 app.use(express.json());
+app.use(cookieParser())
 
-let users = [
- { id: 1, name: 'John', age: 25 },
- { id: 2, name: 'Jane', age: 30 },
- // Add more users as needed
-];
+// let users = [
+//  { id: 1, name: 'John', age: 25 },
+//  { id: 2, name: 'Jane', age: 30 },
+//  // Add more users as needed
+// ];
 const userRouter = express.Router()
 const authRouter = express.Router()
 
@@ -26,6 +28,15 @@ userRouter
  .post(postUser)
  .patch(updateUser)
  .delete(deleteUser)
+
+ userRouter
+ .route('/getCookies')
+ .get(getCookies)
+
+userRouter
+ .route('/setCookies')
+ .get(setCookies)
+
 
 userRouter
  .route('/:id')
@@ -132,6 +143,21 @@ async function postSignUp(req, res) {
   data: user
  })
 }
+
+
+function getCookies(req, res) {
+let cookies = req.cookies;
+console.log('cookies', cookies)
+res.send('cookies received')
+}
+
+function setCookies(req, res) {
+ // res.setHeader('Set-Cookie', 'isLoggedIn = true');
+ res.cookie('isLoggedIn', true, {maxAge: 1000*60*60})
+ res.cookie('isPrimeMember', true, {maxAge: 1000*60*60, secure: true, httpOnly: true})
+ res.send('cookies has been set')
+}
+
 
 // Async function to create user
 async function createUser() {
