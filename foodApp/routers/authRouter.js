@@ -1,8 +1,9 @@
-const express = require('express')
-const userModel = require('../models/userModel')
-const authRouter = express.Router()
+const express = require('express');
+const userModel = require('../models/userModel');
+const authRouter = express.Router();
+const jwt = require('jsonwebtoken');
 
-
+const JWT_KEY = require('../../secrets.js')
 authRouter
  .route('/signup')
  .get(middleware1, getSignUp, middleware2)
@@ -50,7 +51,9 @@ async function loginUser(req, res) {
    let user = await userModel.findOne({ email: email })
    if (user) {
     if (user.password == password) {
-     res.cookie('isLoggedIn', true, { httpOnly: true } )
+     let uid = user['_id']
+     let token = jwt.sign( { payload:uid }, JWT_KEY );
+     res.cookie('login', token, { httpOnly: true } )
      return res.json({
       message: 'logged in successfully',
       userDetails: { email, password }
